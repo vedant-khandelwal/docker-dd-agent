@@ -1,3 +1,7 @@
 #!/bin/bash
-sed -i -e "s/app.datadoghq.com/$FALKONRY_URL/g" /etc/dd-agent/datadog.conf
+prop="dd_url:"
+val="dd_url: "$(echo "$FALKONRY_URL" | sed 's/&/\\&/')
+
+sed -i -e "s@${prop}.*@${val}@g" /etc/dd-agent/datadog.conf
+
 /bin/bash /entrypoint.sh $@
