@@ -4,6 +4,7 @@ MAINTAINER Datadog <package@datadoghq.com>
 
 ENV DOCKER_DD_AGENT yes
 ENV AGENT_VERSION 1:5.8.0-1
+
 # Install the Agent
 RUN echo "deb http://apt.datadoghq.com/ stable main" > /etc/apt/sources.list.d/datadog.list \
  && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C7A7DA52 \
@@ -29,19 +30,29 @@ RUN mv /etc/dd-agent/datadog.conf.example /etc/dd-agent/datadog.conf \
  && rm /etc/dd-agent/conf.d/network.yaml.default \
  && ln -s /opt/datadog-agent/agent/dogstatsd.py /usr/bin/dogstatsd
 
+# Enable remote supervisor connections
+COPY supervisor.conf /etc/dd-agent/supervisor.conf
+
 # Add Docker check
 COPY conf.d/docker_daemon.yaml /etc/dd-agent/conf.d/docker_daemon.yaml
+
+# Add Kubernetes check
+COPY conf.d/kubernetes.yaml /etc/dd-agent/conf.d/kubernetes.yaml
 
 COPY entrypoint.sh /entrypoint.sh
 
 COPY falkonry.sh /falkonry.sh
+
+ENV FALKONRY_URL "service.falkonry.io"
+
 # Extra conf.d and checks.d
 VOLUME ["/conf.d"]
 VOLUME ["/checks.d"]
-ENV FALKONRY_URL "service.falkonry.io"
+
+# Expose supervisor port
+EXPOSE 9001/tcp
 
 # Expose DogStatsD port
 EXPOSE 8125/udp
-
 ENTRYPOINT ["/falkonry.sh"]
 CMD ["supervisord", "-n", "-c", "/etc/dd-agent/supervisor.conf"]

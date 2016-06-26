@@ -6,14 +6,10 @@ if [[ $DD_API_KEY ]]; then
 fi
 
 if [[ $API_KEY ]]; then
-	sed -i -e "s/^.*api_key:.*$/api_key: ${API_KEY}/" /etc/dd-agent/datadog.conf
+    sed -i -e "s/^.*api_key:.*$/api_key: ${API_KEY}/" /etc/dd-agent/datadog.conf
 else
-	echo "You must set API_KEY environment variable to run the Datadog Agent container"
-	exit 1
-fi
-
-if [[ $DD_HOSTNAME ]]; then
-	sed -i -e "s/^#hostname.*$/hostname: ${DD_HOSTNAME}/" /etc/dd-agent/datadog.conf
+    echo "You must set API_KEY environment variable to run the Datadog Agent container"
+    exit 1
 fi
 
 if [[ $DD_TAGS ]]; then
@@ -21,11 +17,11 @@ if [[ $DD_TAGS ]]; then
 fi
 
 if [[ $EC2_TAGS ]]; then
-	sed -i -e "s/^# collect_ec2_tags.*$/collect_ec2_tags: ${EC2_TAGS}/" /etc/dd-agent/datadog.conf
+    sed -i -e "s/^# collect_ec2_tags.*$/collect_ec2_tags: ${EC2_TAGS}/" /etc/dd-agent/datadog.conf
 fi
 
 if [[ $TAGS ]]; then
-	sed -i -e "s/^#tags:.*$/tags: ${TAGS}/" /etc/dd-agent/datadog.conf
+    sed -i -e "s/^#tags:.*$/tags: ${TAGS}/" /etc/dd-agent/datadog.conf
 fi
 
 if [[ $DD_LOG_LEVEL ]]; then
@@ -53,7 +49,7 @@ if [[ $PROXY_USER ]]; then
 fi
 
 if [[ $PROXY_PASSWORD ]]; then
-    sed -i -e "s/^# proxy_password:.*$/proxy_password: ${PROXY_PASSWORD}/" /etc/dd-agent/datadog.conf
+    sed -i -e "s/^# proxy_password:.*$/proxy_password: ${PROXY_USER}/" /etc/dd-agent/datadog.conf
 fi
 
 if [[ $SD_BACKEND ]]; then
@@ -87,7 +83,7 @@ find /checks.d -name '*.py' -exec cp {} /etc/dd-agent/checks.d \;
 export PATH="/opt/datadog-agent/embedded/bin:/opt/datadog-agent/bin:$PATH"
 
 if [[ $DOGSTATSD_ONLY ]]; then
-		PYTHONPATH=/opt/datadog-agent/agent /opt/datadog-agent/embedded/bin/python /opt/datadog-agent/agent/dogstatsd.py
+        PYTHONPATH=/opt/datadog-agent/agent /opt/datadog-agent/embedded/bin/python /opt/datadog-agent/agent/dogstatsd.py
 else
-		exec "$@"
+        exec "$@"
 fi
