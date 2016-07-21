@@ -9,3 +9,4 @@ fi
 sed -i -e "s@${prop}.*@${val}@g" /etc/dd-agent/datadog.conf
 
 /bin/bash /entrypoint.sh $@
+
